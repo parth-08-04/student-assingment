@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySync | College Assignment & Deadline Tracker</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-200">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
+          <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400">StudySync</h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Smart Assignment & Deadline Tracker</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="themeToggleBtn" aria-label="Toggle Theme" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition">
+          <i data-lucide="moon" id="themeIcon" class="w-5 h-5"></i>
+        </button>
+
+        <button id="demoDataBtn" class="hidden md:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          Load Demo Data
+        </button>
+
+        <button id="openAddModalBtn" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-600/20 active:scale-95 transition">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>New Assignment</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Overview & Analytics Banner -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="stat-card bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Tasks</p>
+          <h3 id="statTotal" class="text-2xl sm:text-3xl font-bold mt-1 text-slate-900 dark:text-white">0</h3>
+          <p class="text-xs text-slate-500 mt-1">Assignments tracked</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+          <i data-lucide="book-open" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="stat-card bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">In Progress</p>
+          <h3 id="statPending" class="text-2xl sm:text-3xl font-bold mt-1 text-amber-600 dark:text-amber-400">0</h3>
+          <p class="text-xs text-slate-500 mt-1">Pending submission</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+          <i data-lucide="clock" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="stat-card bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Urgent (≤48h)</p>
+          <h3 id="statUrgent" class="text-2xl sm:text-3xl font-bold mt-1 text-rose-600 dark:text-rose-400">0</h3>
+          <p class="text-xs text-slate-500 mt-1">Deadlines approaching</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="stat-card bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Completion</p>
+          <h3 id="statRate" class="text-2xl sm:text-3xl font-bold mt-1 text-emerald-600 dark:text-emerald-400">0%</h3>
+          <p id="statCompletedSub" class="text-xs text-slate-500 mt-1">0 completed</p>
+        </div>
+        <div class="relative w-14 h-14">
+          <svg class="w-14 h-14 transform -rotate-90">
+            <circle cx="28" cy="28" r="22" stroke="currentColor" stroke-width="4.5" class="text-slate-100 dark:text-slate-800 fill-none" />
+            <circle id="progressCircle" cx="28" cy="28" r="22" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" class="text-emerald-500 fill-none transition-all duration-700 ease-out" stroke-dasharray="138.2" stroke-dashoffset="138.2" />
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center text-emerald-500">
+            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls, Filter & Search Toolbar -->
+    <section class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+      <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="searchInput" placeholder="Search by title, subject or notes..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 focus:bg-white dark:focus:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition">
+        </div>
+
+        <div class="flex flex-wrap sm:flex-nowrap gap-2 items-center">
+          <select id="subjectFilter" class="px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="ALL">All Subjects</option>
+          </select>
+
+          <select id="priorityFilter" class="px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="ALL">All Priorities</option>
+            <option value="High">🔴 High Priority</option>
+            <option value="Medium">🟡 Medium Priority</option>
+            <option value="Low">🟢 Low Priority</option>
+          </select>
+
+          <select id="statusFilter" class="px-3 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="ALL">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+
+          <div class="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700">
+            <button id="viewListBtn" title="List View" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm flex items-center gap-1 transition">
+              <i data-lucide="list" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">List</span>
+            </button>
+            <button id="viewKanbanBtn" title="Kanban Board View" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1 transition">
+              <i data-lucide="kanban" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Board</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- List View -->
+    <section id="listViewContainer" class="space-y-3"></section>
+
+    <!-- Kanban Board View -->
+    <section id="kanbanViewContainer" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+      <div class="kanban-col bg-slate-100/70 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+            <h3 class="font-bold text-sm text-slate-700 dark:text-slate-200">To Do / Pending</h3>
+          </div>
+          <span id="kanbanCountPending" class="text-xs px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold">0</span>
+        </div>
+        <div id="kanbanListPending" class="space-y-3 min-h-[150px]"></div>
+      </div>
+
+      <div class="kanban-col bg-amber-50/40 dark:bg-slate-900/50 p-4 rounded-2xl border border-amber-200/60 dark:border-slate-800/80">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <h3 class="font-bold text-sm text-amber-800 dark:text-amber-400">In Progress</h3>
+          </div>
+          <span id="kanbanCountInProgress" class="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 font-semibold">0</span>
+        </div>
+        <div id="kanbanListInProgress" class="space-y-3 min-h-[150px]"></div>
+      </div>
+
+      <div class="kanban-col bg-emerald-50/40 dark:bg-slate-900/50 p-4 rounded-2xl border border-emerald-200/60 dark:border-slate-800/80">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h3 class="font-bold text-sm text-emerald-800 dark:text-emerald-400">Completed 🎉</h3>
+          </div>
+          <span id="kanbanCountCompleted" class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 font-semibold">0</span>
+        </div>
+        <div id="kanbanListCompleted" class="space-y-3 min-h-[150px]"></div>
+      </div>
+    </section>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-800">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 flex items-center justify-center mb-4">
+        <i data-lucide="clipboard-list" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200">No assignments found</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-6">Looks like you're all caught up!</p>
+      <button onclick="document.getElementById('demoDataBtn').click()" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 transition">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        Populate Sample Data
+      </button>
+    </div>
+
+    <!-- Data Management Footer -->
+    <section class="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Auto-saved to Browser LocalStorage</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="exportBtn" class="hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1 transition">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> Export Backup
+        </button>
+        <span>•</span>
+        <label for="importInput" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1 transition">
+          <i data-lucide="upload" class="w-3.5 h-3.5"></i> Import Backup
+          <input type="file" id="importInput" accept=".json" class="hidden">
+        </label>
+        <span>•</span>
+        <button id="clearAllBtn" class="hover:text-rose-600 dark:hover:text-rose-400 flex items-center gap-1 transition">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Reset All
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Add / Edit Modal -->
+  <div id="assignmentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-modal">
+      <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
+        <div class="flex items-center gap-2">
+          <div class="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+            <i data-lucide="file-plus" class="w-5 h-5"></i>
+          </div>
+          <h2 id="modalTitle" class="text-lg font-bold text-slate-800 dark:text-slate-100">Add New Assignment</h2>
+        </div>
+        <button id="closeModalBtn" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="assignmentForm" class="p-6 space-y-4">
+        <input type="hidden" id="assignmentId">
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Assignment Title *</label>
+          <input type="text" id="formTitle" required placeholder="e.g. Implement Dijkstra Algorithm" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 focus:bg-white dark:focus:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Course / Subject *</label>
+            <input type="text" id="formSubject" required list="commonSubjects" placeholder="e.g. Data Structures" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 focus:bg-white dark:focus:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <datalist id="commonSubjects">
+              <option value="Computer Networks">
+              <option value="Operating Systems">
+              <option value="Database Management (DBMS)">
+              <option value="Data Structures & Algorithms">
+              <option value="Software Engineering">
+              <option value="Mathematics III">
+            </datalist>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Priority *</label>
+            <select id="formPriority" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="High">🔴 High Priority</option>
+              <option value="Medium" selected>🟡 Medium Priority</option>
+              <option value="Low">🟢 Low Priority</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Due Date *</label>
+            <input type="date" id="formDueDate" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Due Time</label>
+            <input type="time" id="formDueTime" value="23:59" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Initial Status</label>
+          <select id="formStatus" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="Pending" selected>Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Notes / Instructions</label>
+          <textarea id="formNotes" rows="3" placeholder="Submission portal link, PDF page numbers, partner details, etc." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 focus:bg-white dark:focus:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-3">
+          <button type="button" id="cancelModalBtn" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            Cancel
+          </button>
+          <button type="submit" class="
